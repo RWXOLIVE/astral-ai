@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon Astral Emerald v1.0 AI Documentation</title>
+    <style>
+        :root {
+            --bg-color: #212529;
+            --text-color: #f8f9fa;
+            --header-color: #adb5bd;
+            --accent-color: #6c757d;
+            --table-header: #343a40;
+            --table-border: #495057;
+            --table-row-even: #2b3035;
+            --table-row-odd: #212529;
+            --link-color: #6ea8fe;
+            --sidebar-bg: #343a40;
+            --sidebar-width: 250px;
+        }
+
+        .light-mode {
+            --bg-color: #f8f9fa;
+            --text-color: #212529;
+            --header-color: #343a40;
+            --accent-color: #6c757d;
+            --table-header: #e9ecef;
+            --table-border: #dee2e6;
+            --table-row-even: #f8f9fa;
+            --table-row-odd: #ffffff;
+            --link-color: #0d6efd;
+            --sidebar-bg: #e9ecef;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s, color 0.3s;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        #sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--sidebar-bg);
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: background-color 0.3s;
+            z-index: 100;
+        }
+
+        #sidebar h2 {
+            color: var(--header-color);
+            margin-top: 0;
+            font-size: 1.2rem;
+        }
+
+        #sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #sidebar li {
+            margin-bottom: 10px;
+        }
+
+        #sidebar a {
+            color: var(--text-color);
+            text-decoration: none;
+            display: block;
+            padding: 5px 0;
+            transition: color 0.2s;
+        }
+
+        #sidebar a:hover {
+            color: var(--link-color);
+        }
+
+        #content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            max-width: 1000px;
+            margin-right: auto;
+            margin-left: auto;
+            padding-left: calc(var(--sidebar-width) + 20px);
+        }
+
+        .content-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            color: var(--header-color);
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: var(--header-color);
+            margin-top: 30px;
+            border-bottom: 1px solid var(--accent-color);
+            padding-bottom: 5px;
+            scroll-margin-top: 20px;
+        }
+
+        h3 {
+            color: var(--header-color);
+            margin-top: 20px;
+        }
+
+        .subtitle {
+            font-style: italic;
+            color: var(--accent-color);
+        }
+
+        .authors {
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .intro {
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid var(--table-border);
+        }
+
+        th {
+            background-color: var(--table-header);
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: var(--table-row-even);
+        }
+
+        tr:nth-child(odd) {
+            background-color: var(--table-row-odd);
+        }
+
+        .indent-1 {
+            margin-left: 20px;
+        }
+
+        .indent-2 {
+            margin-left: 40px;
+        }
+
+        .indent-3 {
+            margin-left: 60px;
+        }
+
+        .toggle-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+
+        .toggle-label {
+            margin-right: 10px;
+            line-height: 30px;
+        }
+
+        a {
+            color: var(--link-color);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            #sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+                padding: 10px;
+            }
+
+            #content {
+                margin-left: 0;
+                padding: 10px;
+                padding-left: 20px;
+            }
+
+            .content-container {
+                padding: 0 10px;
+            }
+
+            th, td {
+                padding: 8px 10px;
+                font-size: 0.9em;
+            }
+            
+            .indent-1, .indent-2, .indent-3 {
+                margin-left: 10px;
+            }
+        }
+    </style>
+</head>
+<body class="dark-mode">
+    <nav id="sidebar">
+        <h2>Navigation</h2>
+        <ul>
+            <li><a href="#overall-summary">Overall Summary</a></li>
+            <li><a href="#move-priority">Move Priority Tiers</a></li>
+            <li><a href="#scoring-system">Scoring System</a></li>
+            <li><a href="#double-battles">Double/Tag Battles</a></li>
+            <li><a href="#specific-moves">Specific Move Behaviors</a></li>
+            <li><a href="#situational-awareness">Situational Awareness</a></li>
+        </ul>
+    </nav>
+
+    <main id="content">
+        <div class="content-container">
+            <div class="toggle-container">
+                <span class="toggle-label">Dark Mode:</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="darkModeToggle" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <header>
+                <h1>Pokémon Astral Emerald v1.0 AI Document</h1>
+                <div class="subtitle">AI Documentation has NOT been finalized… yet…</div>
+                <div class="authors">Created by DreamMachineDev & RWXOLIVE</div>
+            </header>
+
+            <section class="intro">
+                <p>The purpose of this document is to help you as a player understand the scope of the AI and what to expect in a battle on any given turn. We did our best to describe every relevant scenario you will face in this game. Since there is quite a lot of information here, there is a good chance we will probably have missed something, in which case feel free to let either of us know on Discord, and we will do our best to address concerns/issues. This is not intended to be overwhelming (completely understandable if you are, I know I am 🤯). We hope this document can help deepen your understanding of the game and enhance your Astral Emerald experience!</p>
+            </section>
+
+            <section id="overall-summary">
+                <h2>Astral Emerald AI Overall Summary</h2>
+                <p>This AI was inspired from the well-known ROM Hacks Run & Bun and Ancestral X. It may seem like it's a duplicate from those games, but we made sure to implement certain tweaks here and there to ensure it has its own unique style and is up-to-date on the 9th-generation mechanics (current generation as of the creation date of this document).</p>
+                <p>In this game, the AI knows everything about your team. This includes all your Pokémon's stats (EVs/IVs), abilities, moves & held items (if any). So you can go ahead and forget about the element of surprise at the start of the battle 😂.</p>
+                <p>Essentially, the AI will calculate a score for every move, whether it's an attack or status move. We ensured that the AI will calculate a score based on its own favor against the player and not vice versa. In other words, it will NOT attempt to hardcore predict every little move/action you will take, but rather calculate the best possible move/action to take against you as the player by utilizing the assets at its disposal. As you go through the document, you will see that I have laid out various scenarios so that you can better comprehend how moves are scored. Not all relevant moves are listed, but I have made sure to include specific examples so that the general idea is shown. These scenarios include attacking, priority, stat-changing, weather/terrain, & other status moves.</p>
+                <p>In each section, I have covered the scoring layout for how moves are calculated on general move categories. Please understand that this general formula will not be the same for every scenario, hence I have done my best to list out various examples to mitigate any confusion.</p>
+                <p>Please note, since this game also features the Mega Evolution and Terastallization mechanics, I've implemented a special calculation built on top of the battle AI for certain scenarios. We have written a separate section that discusses the calculation for both Mega Evolution and Terastallization, as well as the necessary conditions required to trigger the phenomenon.</p>
+            </section>
+
+            <section id="move-priority">
+                <h2>MOVE PRIORITY TIERS</h2>
+                <p>We have categorized moves into structured priority tiers for the AI, which ensures efficient decision-making across all scenarios.</p>
+
+                <h3>1. Struggle</h3>
+                <div class="indent-1">
+                    <p>1. ONLY APPLIES when the AI is restricted in its move choices</p>
+                    <p>2. Sleep condition</p>
+                    <div class="indent-1">
+                        <p>1. Prioritize Snore or Sleep Talk until the Pokémon wakes up</p>
+                    </div>
+                    <p>3. Semi-invulnerable state (Dig, Dive, etc.)</p>
+                    <div class="indent-1">
+                        <p>1. When the player uses a move that makes their Pokémon semi-invulnerable for a turn, the AI prioritizes moves capable of hitting through the state</p>
+                        <p>2. Helping Hand and Toxic (when used by a Poison-type) are unaffected by semi-invulnerable states and are considered valid options during these turns</p>
+                        <p>3. If none of the AI's moves can counter the player's current state:</p>
+                        <div class="indent-1">
+                            <p>1. Prioritize using a protection move or the highest-damaging move via coin flip</p>
+                        </div>
+                        <p>4. Cases table</p>
+                    </div>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Semi-Invulnerable Moves</th>
+                            <th>Counter Moves</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Bounce, Fly, or Sky Drop</td>
+                            <td>Gust, Hurricane, Sky Uppercut, Smack Down, Thousand Arrows, Thunder, Twister</td>
+                        </tr>
+                        <tr>
+                            <td>Dig</td>
+                            <td>Bulldoze, Earthquake, Fissure, Magnitude</td>
+                        </tr>
+                        <tr>
+                            <td>Dive</td>
+                            <td>Surf and Whirlpool</td>
+                        </tr>
+                        <tr>
+                            <td>Phantom Force or Shadow Force</td>
+                            <td>No direct counters</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>2. Special</h3>
+                <div class="indent-1">
+                    <p>1. ONLY APPLIES for situational moves that can drastically alter the battle flow</p>
+                    <p>2. Fake Out</p>
+                    <div class="indent-1">
+                        <p>1. ALWAYS used on the first turn unless the target is immune (Inner Focus, Shield Dust, etc.)</p>
+                    </div>
+                    <p>3. Perish Song</p>
+                    <div class="indent-1">
+                        <p>1. Used ONLY IF the following conditions are met:</p>
+                        <div class="indent-1">
+                            <p>1. AI Pokémon has Arena Trap or Shadow Tag</p>
+                            <p>2. Target is not Ghost-type</p>
+                            <p>3. Opponent cannot switch freely</p>
+                        </div>
+                    </div>
+                    <p>4. Destiny Bond</p>
+                    <div class="indent-1">
+                        <p>1. Triggered when one of the following conditions is met:</p>
+                        <div class="indent-1">
+                            <p>1. AI Pokémon is at low HP (33% HP at most) and outspeeds the opponent</p>
+                            <p>2. AI Pokémon has a Focus Sash and sees the player's highest-damaging move has a guaranteed kill</p>
+                        </div>
+                    </div>
+                    <p>5. Encore</p>
+                    <div class="indent-1">
+                        <p>1. Used ONLY IF the following conditions are met:</p>
+                        <div class="indent-1">
+                            <p>1. Speed advantage</p>
+                            <div class="indent-1">
+                                <p>1. The AI can outspeed the player</p>
+                            </div>
+                            <p>2. Player's previous move</p>
+                            <div class="indent-1">
+                                <p>1. The player has used one of the following:</p>
+                                <div class="indent-1">
+                                    <p>1. A non-attacking move (Protect, Calm Mind, Recover, etc.)</p>
+                                    <p>2. An attacking move to which the AI is immune (Outrage against a Fairy-type, Ember against Flash Fire, etc.)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p>6. Self-Destruct/Explosion</p>
+                    <div class="indent-1">
+                        <p>1. Used only when ONE of the following conditions is met:</p>
+                        <div class="indent-1">
+                            <p>1. AI outspeeds and can guarantee a KO</p>
+                            <p>2. AI survives the opponent's next move and has no other viable option</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>3. Mega Evolution/Terastallization</h3>
+                <div class="indent-1">
+                    <p>1. For these phenomena, they are strategically delayed to the second turn if the AI's base ability or typing offers a benefit. Otherwise, this will ALWAYS trigger on the first turn</p>
+                    <p>2. Mega Evolution</p>
+                    <div class="indent-1">
+                        <p>1. Moxie, Speed Boost, etc.</p>
+                    </div>
+                    <p>3. Terastallization</p>
+                    <div class="indent-1">
+                        <p>1. Used defensively to neutralize weaknesses or offensively to boost STAB damage</p>
+                    </div>
+                </div>
+
+                <h3>4. Kill</h3>
+                <div class="indent-1">
+                    <p>1. ONLY APPLIES when the AI sees a guaranteed kill with at least one of its attacking moves</p>
+                    <p>2. Priorities</p>
+                    <div class="indent-1">
+                        <p>1. Stat-boosting attacking moves (Torch Song, Aqua Step, etc.)</p>
+                        <p>2. Priority moves unless blocked by immunities (Psychic Terrain, Water Absorb blocking Aqua Jet, etc.)</p>
+                        <p>3. High-damaging moves with beneficial secondary effects</p>
+                        <p>4. Standard attacking moves</p>
+                        <p>5. Attacking moves with negative effects (recoil, stat-drop, etc.)</p>
+                    </div>
+                </div>
+
+                <h3>5. Lethal</h3>
+                <div class="indent-1">
+                    <p>1. ONLY APPLIES if the AI does NOT see a guaranteed kill</p>
+                    <p>2. Stat-boosting moves</p>
+                    <div class="indent-1">
+                        <p>1. Use once per Pokémon unless circumstances demand more (Swords Dance, Calm Mind, etc.)</p>
+                    </div>
+                    <p>3. Status moves</p>
+                    <div class="indent-1">
+                        <p>1. Focus on crippling the player or benefiting the AI's team (hazards, terrain, weather, etc.)</p>
+                        <p>2. Avoid redundant usage if effects are already active</p>
+                    </div>
+                    <p>4. Protection moves</p>
+                    <div class="indent-1">
+                        <p>1. Use to bait attacks or stall turns, but not consecutively</p>
+                    </div>
+                </div>
+
+                <h3>6. Switch</h3>
+                <div class="indent-1">
+                    <p>1. This tier is minimized but ONLY ALLOWED in one of the following conditions below:</p>
+                    <div class="indent-1">
+                        <p>1. No effective moves, and another Pokémon can counter the current threat</p>
+                        <p>2. Item lock (example: Trick with Choice items)</p>
+                        <p>3. Extremely low damage output (<15%) from all AI moves</p>
+                    </div>
+                    <p>2. Only a maximum of 3 switches per battle are allowed for the AI to prevent repetitiveness</p>
+                </div>
+            </section>
+
+            <section id="scoring-system">
+                <h2>UNIVERSAL MOVE SCORING SYSTEM</h2>
+                <p>Every move is assigned a dynamic score based on its effectiveness and situational value:</p>
+                <ul>
+                    <li><strong>Damage Output</strong>
+                        <ul>
+                            <li>+6 to +14 based on the likelihood of a kill</li>
+                            <li>Higher scores for moves with secondary effects or guaranteed hits</li>
+                        </ul>
+                    </li>
+                    <li><strong>Status Effects</strong>
+                        <ul>
+                            <li>Boosts for moves that cripple opponents (Will-O-Wisp, Thunder Wave, etc.)</li>
+                        </ul>
+                    </li>
+                    <li><strong>Field Effects</strong>
+                        <ul>
+                            <li>Weather and terrain moves score higher when they provide significant benefits to the team</li>
+                        </ul>
+                    </li>
+                    <li><strong>Priority Moves</strong>
+                        <ul>
+                            <li>+11 when outspeeding guarantees damage or prevents a faint</li>
+                        </ul>
+                    </li>
+                    <li><strong>Useless Moves</strong>
+                        <ul>
+                            <li>Automatically excluded (hazards when already active, existing status conditions, etc.)</li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <p>I have also created a table to serve as a visual and statistical representation of the general priority scoring system.</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Priority</th>
+                            <th>Condition</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td rowspan="4">Kills</td>
+                            <td>Stat-boosting attacking move has KO guarantee</td>
+                            <td>+14</td>
+                        </tr>
+                        <tr>
+                            <td>Priority move has KO guarantee</td>
+                            <td>+13</td>
+                        </tr>
+                        <tr>
+                            <td>Move has KO guarantee and AI outspeeds</td>
+                            <td>+12</td>
+                        </tr>
+                        <tr>
+                            <td>Move has KO guarantee, but AI is slower and can survive highest-damaging move</td>
+                            <td>+11</td>
+                        </tr>
+                        <tr>
+                            <td>Priority Moves</td>
+                            <td>AI is slower, expects a KO, and the move has priority</td>
+                            <td>+10</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="5">Special (if all conditions are met)</td>
+                            <td>Fake Out</td>
+                            <td>+9</td>
+                        </tr>
+                        <tr>
+                            <td>Perish Song</td>
+                            <td>+10</td>
+                        </tr>
+                        <tr>
+                            <td>Destiny Bond</td>
+                            <td>+7</td>
+                        </tr>
+                        <tr>
+                            <td>Encore</td>
+                            <td>+8 (for non-attacking moves), +9 (for attacking moves against immunity)</td>
+                        </tr>
+                        <tr>
+                            <td>Explosion/Self-Destruct</td>
+                            <td>+8</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">Mega Evolution</td>
+                            <td>+10</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">Terastallization</td>
+                            <td>+9</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="5">Lethal</td>
+                            <td>Hazard moves</td>
+                            <td>+8 (first use only)</td>
+                        </tr>
+                        <tr>
+                            <td>Protection move if AI is below 50% HP or expects to be OHKOed</td>
+                            <td>+7</td>
+                        </tr>
+                        <tr>
+                            <td>Stat-boosting move</td>
+                            <td>+6</td>
+                        </tr>
+                        <tr>
+                            <td>Status move that benefits the AI team (weather, terrain, etc.)</td>
+                            <td>+6</td>
+                        </tr>
+                        <tr>
+                            <td>Status move that cripples the player (Toxic, Thunder Wave, etc.)</td>
+                            <td>+6</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="2">Low Effectiveness</td>
+                            <td>Move deals less than 15% of player's HP</td>
+                            <td>-6</td>
+                        </tr>
+                        <tr>
+                            <td>Useless moves (redundant hazards, status moves when already applied, etc.)</td>
+                            <td>-20</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="double-battles">
+                <h2>DOUBLE/TAG BATTLE ADJUSTMENTS</h2>
+                <p>The AI adapts to the complexity of these formats:</p>
+                <ul>
+                    <li><strong>Targeting</strong>
+                        <ul>
+                            <li>Scores moves for all potential targets, selecting the highest overall score</li>
+                        </ul>
+                    </li>
+                    <li><strong>Synergies</strong>
+                        <ul>
+                            <li>Combos like Follow Me with setup moves or Helping Hand with high-damage attacks are prioritized</li>
+                        </ul>
+                    </li>
+                    <li><strong>Wide-Area Moves</strong>
+                        <ul>
+                            <li>Spread moves (Earthquake, Snarl, etc.) are used when allies are immune or unaffected</li>
+                        </ul>
+                    </li>
+                    <li><strong>Support Moves</strong>
+                        <ul>
+                            <li>Tailwind, Reflect, and similar moves gain additional points when they benefit the active AI Pokémon</li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <p>I have added another table to list all the score & priority adjustments for double/tag battles.</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Priority</th>
+                            <th>Condition</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td rowspan="5">Kills</td>
+                            <td>Spread move guarantees KO (Earthquake, Dazzling Gleam, etc.)</td>
+                            <td>+14</td>
+                        </tr>
+                        <tr>
+                            <td>Stat-boosting attacking move has KO guarantee</td>
+                            <td>+13</td>
+                        </tr>
+                        <tr>
+                            <td>Priority move has KO guarantee</td>
+                            <td>+12</td>
+                        </tr>
+                        <tr>
+                            <td>Single-target KO and does not harm ally</td>
+                            <td>+11</td>
+                        </tr>
+                        <tr>
+                            <td>Move guarantees a KO</td>
+                            <td>+10</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="5">Synergy</td>
+                            <td>Wide-area damaging move (ally unaffected)</td>
+                            <td>+9</td>
+                        </tr>
+                        <tr>
+                            <td>Hazard move if beneficial for the AI team</td>
+                            <td>+8 (first use only)</td>
+                        </tr>
+                        <tr>
+                            <td>Field move benefitting the AI team (Tailwind, Reflect, etc.)</td>
+                            <td>+8</td>
+                        </tr>
+                        <tr>
+                            <td>Follow Me redirects a critical move</td>
+                            <td>+8</td>
+                        </tr>
+                        <tr>
+                            <td>Helping Hand assists in KO guarantee</td>
+                            <td>+7</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="4">Special (if all conditions are met)</td>
+                            <td>Fake Out</td>
+                            <td>+9</td>
+                        </tr>
+                        <tr>
+                            <td>Perish Song</td>
+                            <td>+10</td>
+                        </tr>
+                        <tr>
+                            <td>Destiny Bond</td>
+                            <td>+7</td>
+                        </tr>
+                        <tr>
+                            <td>Explosion/Self-Destruct</td>
+                            <td>+8</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">Mega Evolution</td>
+                            <td>+10</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">Terastallization</td>
+                            <td>+9</td>
+                        </tr>
+                        <tr>
+                            <td>Priority Moves</td>
+                            <td>Partner has beneficial item and AI can trigger it</td>
+                            <td>+12</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">AI is slower, expects a KO, and the move has priority</td>
+                            <td>+11</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="2">Low Effectiveness</td>
+                            <td>Move harms ally without providing significant benefit</td>
+                            <td>-8</td>
+                        </tr>
+                        <tr>
+                            <td>Move provides no strategic advantage (redundant hazards, low-damage moves, etc.)</td>
+                            <td>-20</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="specific-moves">
+                <h2>SPECIFIC MOVE BEHAVIORS</h2>
+                <ul>
+                    <li><strong>Hazards</strong>
+                        <ul>
+                            <li>First Use:
+                                <ul>
+                                    <li>+8 for Stealth Rock, +9 for Sticky Web</li>
+                                </ul>
+                            </li>
+                            <li>Subsequent Uses:
+                                <ul>
+                                    <li>Score reduced by 20 for each hazard already active</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><strong>Stat-boosting moves</strong>
+                        <ul>
+                            <li>Used cautiously, scoring higher if the AI can safely set up:
+                                <ul>
+                                    <li>+6 for setup moves, +9 if the opponent is incapacitated</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><strong>Healing moves</strong>
+                        <ul>
+                            <li>Triggered if recovery ensures survival from the next turn:
+                                <ul>
+                                    <li>+7 for standard recovery, +9 if boosted by weather or abilities</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+
+            <section id="situational-awareness">
+                <h2>SITUATIONAL AWARENESS</h2>
+                <p>The AI is fully aware of the player's team, which includes:</p>
+                <ul>
+                    <li>Pokémon stats (EVs/IVs), abilities, items, and moves.</li>
+                    <li>Current field conditions (weather, terrain, etc.)</li>
+                </ul>
+
+                <h3>1. Advanced Strategies</h3>
+                <div class="indent-1">
+                    <p>1. Predicts player switches and adjusts scoring for moves/abilities boosted by hard switches, such as Pursuit</p>
+                    <p>2. Evaluates risk versus reward for multi-turn moves (example: Solar Beam without Sun).</p>
+                    <p>3. Avoids redundant usage of ineffective moves</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        // Dark mode toggle functionality
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const body = document.body;
+
+        // Set dark mode as default
+        localStorage.setItem('darkMode', 'enabled');
+
+        // Toggle dark mode
+        darkModeToggle.addEventListener('change', function() {
+            if (this.checked) {
+                body.classList.add('dark-mode');
+                body.classList.remove('light-mode');
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                body.classList.remove('dark-mode');
+                body.classList.add('light-mode');
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
